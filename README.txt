@@ -6,44 +6,51 @@ After user confirms his/her message by typing 'yes' the HTTP request is generate
 
 USAGE:
 $ ./smsnexmo.py -h
-usage: smsnexmo.py [-h] [-f FILE] [-r RCPT]
+usage: smsnexmo.py [-h] [-s SENDER] [-p PHONEBOOK] [-r RCPT]
 
 optional arguments:
   -h, --help            show this help message and exit
-  -f FILE, --file FILE  file containing tab delimited phonebook entries
-                        (default: phonebook.txt)
+  -s SENDER, --sender SENDER
+                        From: SENDER
+  -p PHONEBOOK, --phonebook PHONEBOOK
+                        file containing tab delimited phonebook entries,
+                        default: phonebook.txt
   -r RCPT, --recipient RCPT
-                        lookup recipient in phonebook, if not specified you
-                        are asked to enter number manually
+                        lookup recipient in phonebook
+
 $ cat phonebook.txt
 ;create entries in following order:
 ;<name>\tab<number>
 ;examples:
-;john doe               080555123
-;black smith    080555999
+;john doe               +38580555123
+;black smith    +38680555999
 foo                             1
 bar                             2
-john                    090111222
+john                    +38790111222
 
 $ ./smsnexmo.py
 Enter recipient's GSM number:
-090111222
++38580555123
 Type your message in one line:
 the answer is 42
 
-090111222:the answer is 42
+From: <your number>		<-- set sender variable in source code
+To: +38580555123
+Text: the answer is 42
 
 Send? (yes/NO)
 yes
 sending...
 
-$ ./smsnexmo.py -r john
+$ ./smsnexmo.py -r john -s 12345
 Searching: john
-Found: john -> 090111222
+Found: john -> +38790111222
 Type your message in one line:
 call me asap
 
-090111222:call me asap
+From: 12345
+To: +38790111222
+Text: call me asap
 
 Send? (yes/NO)
 yes

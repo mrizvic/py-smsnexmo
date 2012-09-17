@@ -21,40 +21,46 @@ def read_recipient(args):
 		print "Searching: " + args.rcpt
 		i={}
 		try:
-			with open(args.file) as f:
+			with open(args.phonebook) as f:
 				for line in f:
-					if ( len(line)<2 or line[0] == ';'):
+					if (len(line)<2 or line[0] == ';'):
 						continue
 					(key,val) = re.split('\t+',line)
 					i[key] = val
 				f.close()
 		except IOError as e:
-			print "I/O error({0}): {1}".format(e.errno, e.strerror)+": "+args.file
+			print "I/O error({0}): {1}".format(e.errno, e.strerror)+": "+args.phonebook
 		for k,v in i.items():
 			if (k.find(args.rcpt) > -1):
 				gsm = i[k].strip()
 				print "Found: " +  k + " -> " + gsm
-				if (gsm.isdigit() and len(gsm) == 9):
+				if (gsm[1:].isdigit() and len(gsm) == 12):
 					return gsm
 				print "check your number: " + gsm
 				break
-		print "Not found!"
 		
 	while True:
 		print "Enter recipient's GSM number:"
 		gsm = sys.stdin.readline().strip()
-		if (gsm.isdigit() and len(gsm) == 9):
+		if (gsm[1:].isdigit() and len(gsm) == 12):
 			return gsm
 		print "check your number"
 		continue
 
-def send_sms(gsm,msg):
-	#url	=	'https://rest.nexmo.com/sms/json'
-	url		=	'dummy'
+def send_sms(sender,gsm,msg):
+	url	=	'https://rest.nexmo.com/sms/json'
+
+	u	=	'CHANGEME'
+	p	=	'CHANGEME'
+
+	if (u == p == 'CHANGEME'):
+		print "you should change username and password"
+		return 1
+
 	values	=	{
-			'username'	:	'CHANGEME',
-			'password'	:	'CHANGEME',
-			'from'		:	'CHANGEME',
+			'username'	:	u,
+			'password'	:	p,
+			'from'		:	sender,
 			'type'		:	'text',
 			'to'		:	gsm,
 			'text'		:	msg
@@ -74,23 +80,30 @@ def send_sms(gsm,msg):
 	except urllib2.URLError, e:
 		print "URLError caught:", e
 		return 1
-	except ValueError, e:
-		print "ValueError caught:", e
-		return 1
 
 def main():
 
 	parser = argparse.ArgumentParser()
-	parser.add_argument('-f', '--file', action='store', dest='file', default='phonebook.txt', help='file containing tab delimited phonebook entries (default: phonebook.txt)')
-	parser.add_argument('-r', '--recipient', action='store', dest='rcpt', default='NULL', help='lookup recipient in phonebook, if not specified you are asked to enter number manually')
+	parser.add_argument('-s', '--sender', action='store', dest='sender', default='NULL', help='From: SENDER')
+	parser.add_argument('-p', '--phonebook', action='store', dest='phonebook', default='phonebook.txt', help='file containing tab delimited phonebook entries, default: phonebook.txt')
+	parser.add_argument('-r', '--recipient', action='store', dest='rcpt', default='NULL', help='lookup recipient in phonebook')
 
 	args = parser.parse_args()
 
+	sender = args.sender
+
+	if (sender == 'NULL'):
+		sender = 'CHANGEME'
+
+	if (sender == 'CHANGEME'):
+		print "you should change sender variable in source or specify --sender option "
+		return 1
+
 	try:
-		gsm = read_recipient(args)
 		msg = read_message()
+		gsm = read_recipient(args)
 		print
-		print gsm+ ":"+msg
+		print "From:",sender,"\n","To:",gsm,"\n","Text:",msg
 		print
 	except KeyboardInterrupt:
 		print "CTRL+C caught... byebye"
@@ -105,7 +118,7 @@ def main():
 
 	if (send.strip() == "yes"):
 		print "sending..."
-		return send_sms(gsm,msg)
+		return send_sms(sender,gsm,msg)
 	else:
 		print "Aborted..."
 		return 0
