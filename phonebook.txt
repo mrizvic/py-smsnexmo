@@ -1,14 +1,10 @@
 ;create entries in following order:
 ;<name>\tab<number>
 ;examples:
-;john doe		080555123
-;black smith	080555999
+;john doe		+38580555123
+;black smith	+38680555999
 foo				1
-
-
-
-;
-
-
 bar				2
-john			090111222
+;comment
+
+john			+38790111222
