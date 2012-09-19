@@ -7,7 +7,10 @@ import json
 import re
 import argparse
 
-def read_message():
+def read_message(text):
+	if (text != 'NULL'):
+		return text
+
 	while True:
 		print "Type your message in one line:"
 		msg = sys.stdin.readline().strip()
@@ -50,6 +53,7 @@ def read_recipient(args):
 def send_sms(sender,gsm,msg):
 	url	=	'https://rest.nexmo.com/sms/json'
 
+	#check nexmo.com dashboard for key and secret
 	u	=	'CHANGEME'
 	p	=	'CHANGEME'
 
@@ -87,10 +91,12 @@ def main():
 	parser.add_argument('-s', '--sender', action='store', dest='sender', default='NULL', help='From: SENDER')
 	parser.add_argument('-p', '--phonebook', action='store', dest='phonebook', default='phonebook.txt', help='file containing tab delimited phonebook entries, default: phonebook.txt')
 	parser.add_argument('-r', '--recipient', action='store', dest='rcpt', default='NULL', help='lookup recipient in phonebook')
+	parser.add_argument('-t', '--text', action='store', dest='text', default='NULL', help='message for the recipient (example: -t \'hello world\')')
 
 	args = parser.parse_args()
 
 	sender = args.sender
+	text = args.text
 
 	if (sender == 'NULL'):
 		sender = 'CHANGEME'
@@ -100,7 +106,7 @@ def main():
 		return 1
 
 	try:
-		msg = read_message()
+		msg = read_message(text)
 		gsm = read_recipient(args)
 		print
 		print "From:",sender,"\n","To:",gsm,"\n","Text:",msg
