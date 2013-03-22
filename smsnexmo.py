@@ -14,9 +14,15 @@ def read_message(text):
 	while True:
 		print "Type your message in one line:"
 		msg = sys.stdin.readline().strip()
-		if (len(msg) < 1):
+		msglen = len(msg)
+		if (msglen < 1):
 			print "message too short"
 			continue
+
+		elif (msglen > 160):
+			print "message too long:",msglen
+			continue
+
 		return msg
 
 def read_recipient(args):
@@ -37,7 +43,7 @@ def read_recipient(args):
 			if (k.find(args.rcpt) > -1):
 				gsm = i[k].strip()
 				print "Found: " +  k + " -> " + gsm
-				if (gsm[1:].isdigit() and len(gsm) == 12):
+				if (gsm[1:].isdigit() and len(gsm) >= 12):
 					return gsm
 				print "check your number: " + gsm
 				break
@@ -45,7 +51,7 @@ def read_recipient(args):
 	while True:
 		print "Enter recipient's GSM number:"
 		gsm = sys.stdin.readline().strip()
-		if (gsm[1:].isdigit() and len(gsm) == 12):
+		if (gsm[1:].isdigit() and len(gsm) >= 12):
 			return gsm
 		print "check your number"
 		continue
@@ -53,7 +59,6 @@ def read_recipient(args):
 def send_sms(sender,gsm,msg):
 	url	=	'https://rest.nexmo.com/sms/json'
 
-	#check nexmo.com dashboard for key and secret
 	u	=	'CHANGEME'
 	p	=	'CHANGEME'
 
@@ -89,9 +94,10 @@ def main():
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-s', '--sender', action='store', dest='sender', default='NULL', help='From: SENDER')
-	parser.add_argument('-p', '--phonebook', action='store', dest='phonebook', default='phonebook.txt', help='file containing tab delimited phonebook entries, default: phonebook.txt')
+	parser.add_argument('-p', '--phonebook', action='store', dest='phonebook', default='phonebook.txt', help='file containing tab delimited phonebook entries, default: ~/.talifonske.txt')
 	parser.add_argument('-r', '--recipient', action='store', dest='rcpt', default='NULL', help='lookup recipient in phonebook')
 	parser.add_argument('-t', '--text', action='store', dest='text', default='NULL', help='message for the recipient (example: -t \'hello world\')')
+	parser.add_argument('-y', '--yes', action='store_true', dest='yes', default='no', help='answer yes to all questions')
 
 	args = parser.parse_args()
 
@@ -115,12 +121,16 @@ def main():
 		print "CTRL+C caught... byebye"
 		return 1
 
-	print "Send? (yes/NO)"
-	try:
-		send = sys.stdin.readline()
-	except KeyboardInterrupt:
-		print "CTRL+C caught... byebye"
-		return 1
+	if (args.yes == 'no'):
+		print "Send? (yes/NO)"
+		try:
+			send = sys.stdin.readline()
+		except KeyboardInterrupt:
+			print "CTRL+C caught... byebye"
+			return 1
+
+	if (args.yes == True):
+		send = 'yes'
 
 	if (send.strip() == "yes"):
 		print "sending..."
