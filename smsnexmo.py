@@ -57,10 +57,12 @@ def read_recipient(args):
 		continue
 
 def send_sms(sender,gsm,msg):
+	if (is_development):
+		return 1
 	url	=	'https://rest.nexmo.com/sms/json'
 
-	u	=	'CHANGEME'
-	p	=	'CHANGEME'
+	u	=	'2c1a6c39'
+	p	=	'c878626a'
 
 	if (u == p == 'CHANGEME'):
 		print "you should change username and password"
@@ -94,7 +96,7 @@ def main():
 
 	parser = argparse.ArgumentParser()
 	parser.add_argument('-s', '--sender', action='store', dest='sender', default='NULL', help='From: SENDER')
-	parser.add_argument('-p', '--phonebook', action='store', dest='phonebook', default='phonebook.txt', help='file containing tab delimited phonebook entries, default: ~/.talifonske.txt')
+	parser.add_argument('-p', '--phonebook', action='store', dest='phonebook', default='/home/marko/.talifonske.txt', help='file containing tab delimited phonebook entries, default: ~/.talifonske.txt')
 	parser.add_argument('-r', '--recipient', action='store', dest='rcpt', default='NULL', help='lookup recipient in phonebook')
 	parser.add_argument('-t', '--text', action='store', dest='text', default='NULL', help='message for the recipient (example: -t \'hello world\')')
 	parser.add_argument('-y', '--yes', action='store_true', dest='yes', default='no', help='answer yes to all questions')
@@ -105,11 +107,15 @@ def main():
 	text = args.text
 
 	if (sender == 'NULL'):
-		sender = 'CHANGEME'
+		sender = '+38651374773'
 
 	if (sender == 'CHANGEME'):
 		print "you should change sender variable in source or specify --sender option "
 		return 1
+	if (__file__.find("devel") == -1):
+		is_development = False
+	else:
+		is_development = True
 
 	try:
 		msg = read_message(text)
