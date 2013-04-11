@@ -7,6 +7,13 @@ import json
 import re
 import argparse
 
+global is_development
+
+if (__file__.find("devel") == -1):
+	is_development = False
+else:
+	is_development = True
+
 def read_message(text):
 	if (text != 'NULL'):
 		return text
@@ -112,10 +119,6 @@ def main():
 	if (sender == 'CHANGEME'):
 		print "you should change sender variable in source or specify --sender option "
 		return 1
-	if (__file__.find("devel") == -1):
-		is_development = False
-	else:
-		is_development = True
 
 	try:
 		msg = read_message(text)
