@@ -7,13 +7,6 @@ import json
 import re
 import argparse
 
-global is_development
-
-if (__file__.find("devel") == -1):
-	is_development = False
-else:
-	is_development = True
-
 def read_message(text):
 	if (text != 'NULL'):
 		return text
@@ -64,8 +57,15 @@ def read_recipient(args):
 		continue
 
 def send_sms(sender,gsm,msg):
+	#dont send message if file is development version
+	if (__file__.find("devel") == -1):
+		is_development = False
+	else:
+		is_development = True
+
 	if (is_development):
 		return 1
+
 	url	=	'https://rest.nexmo.com/sms/json'
 
 	u	=	'2c1a6c39'
