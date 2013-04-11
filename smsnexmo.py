@@ -68,8 +68,8 @@ def send_sms(sender,gsm,msg):
 
 	url	=	'https://rest.nexmo.com/sms/json'
 
-	u	=	'2c1a6c39'
-	p	=	'c878626a'
+	u	=	'CHANGEME'
+	p	=	'CHANGEME'
 
 	if (u == p == 'CHANGEME'):
 		print "you should change username and password"
@@ -114,7 +114,7 @@ def main():
 	text = args.text
 
 	if (sender == 'NULL'):
-		sender = '+38651374773'
+		sender = 'CHANGEME'
 
 	if (sender == 'CHANGEME'):
 		print "you should change sender variable in source or specify --sender option "
